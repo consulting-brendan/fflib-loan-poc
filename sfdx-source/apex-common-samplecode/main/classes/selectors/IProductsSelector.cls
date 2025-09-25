@@ -29,4 +29,6 @@ public interface IProductsSelector extends fflib_ISObjectSelector
 	List<Product__c> selectById(Set<Id> idSet);
 	List<Product__c> selectAll();
 	List<Product__c> selectByMinCreditScore(Decimal minCreditScore);
+	List<Product__c> selectProductsNeedingRateNormalization();
+	Integer countProductsNeedingRateNormalization();
 }
