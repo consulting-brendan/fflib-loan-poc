@@ -12,7 +12,7 @@ The solution implements two main user stories using fflib architecture:
 
 ## Process Demo
 
-**[▶️ Watch Story A Demo](https://www.loom.com/share/dc76320baf9944f9830bc83319938feb?sid=8e28daeb-e900-4fef-9235-734dc90a7bc2)**
+**[▶️ Watch Story A Demo](https://www.loom.com/share/ddc1f73cd4374af58730cef73fbc5828?sid=ce6761bb-6599-46a3-88ff-04c43612fae6)**
 
 See the loan application submission workflow in action - from creating Loan Application, linking product and contacts to automatic approval and task assignment.
 
@@ -113,7 +113,7 @@ sf apex test run --tests LoanApplicationsTriggerHandlerTest.testStatusChangeFrom
 **Story A & B Class Coverage Summary:**
 ```
 Story A Classes:
-✅ ContactsSelector              36%
+✅ ContactsSelector              %
 ✅ LoanApplicationsSelector      27%  
 ✅ LoanApplications             100%
 ✅ LoanApplicationsTriggerHandler 88%
