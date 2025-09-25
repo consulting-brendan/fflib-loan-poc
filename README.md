@@ -488,3 +488,25 @@ This project demonstrates key fflib patterns:
 - **Interface Segregation**: Each layer has corresponding interfaces for testability
 - **Domain-Driven Design**: Business logic encapsulated in domain classes
 - **Unit of Work**: Transactional integrity across multiple DML operations
+
+## References & Acknowledgments
+
+This implementation is built using the **Apex Enterprise Patterns** (fflib) framework:
+
+### Core Libraries
+- **[fflib-apex-common](https://github.com/apex-enterprise-patterns/fflib-apex-common)** - Common Apex Library supporting Apex Enterprise Patterns and much more! This foundational library provides the base classes and patterns for Domain, Selector, Service, and Unit of Work layers.
+
+- **[fflib-apex-common-samplecode](https://github.com/apex-enterprise-patterns/fflib-apex-common-samplecode)** - Sample application illustrating the Apex Enterprise Patterns library. This repository was instrumental for quick installation and setup into the development org, providing working examples of fflib implementation patterns.
+
+### Documentation & Learning Resources
+The fflib framework includes comprehensive documentation covering:
+- **Domain Layer**: Business logic encapsulation and trigger handling
+- **Selector Layer**: SOQL query abstraction and data access patterns  
+- **Service Layer**: Business process orchestration and transaction management
+- **Unit of Work**: Bulkified DML operations and transaction integrity
+
+### Framework Benefits
+- **Governor Limit Management**: Efficient resource utilization through bulkification
+- **Security**: Built-in CRUD/FLS enforcement and sharing rule compliance
+- **Testability**: Interface-driven design enabling comprehensive mocking strategies
+- **Maintainability**: Clear separation of concerns and standardized architecture patterns
