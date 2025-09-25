@@ -82,62 +82,26 @@ Scheduler (Nightly 2 AM) → Check Products Needing Normalization → Execute Ba
 
 ### How to Run Tests
 
-#### Story A: Loan Application Tests
 ```bash
 # Run all Story A tests
 sf apex test run \
-<<<<<<< HEAD
-  --classnames LoanApplicationServiceTest,LoanApplicationDomainTest \
-  --result-format human \
-  --code-coverage \
-  --wait 10
-```
-
-### Test Results
-
-<img width="523" height="173" alt="image" src="https://github.com/user-attachments/assets/9cca7755-06be-4086-b491-c02bcf006f29" />
-=======
   --classnames LoanApplicationsSelectorTest,ContactsSelectorTest,LoanApplicationsTest,LoanApplicationsTriggerHandlerTest \
   --result-format human \
   --code-coverage \
   --wait 10
 
-# Run specific test
+# Run specific test classes
 sf apex test run --tests LoanApplicationsTriggerHandlerTest.testStatusChangeFromDraftToSubmittedWithDML --synchronous
 ```
 
-#### Story B: Product Rate Normalization Tests
-```bash
-# Run all Product Rate Normalization tests
-sf apex test run \
-  --classnames ProductsTest,ProductRateNormalizationServiceTest,ProductRateNormalizationBatchTest,ProductRateNormalizationSchedulerTest \
-  --result-format human \
-  --code-coverage \
-  --wait 10
+### Test Results
 
-# Run specific rate normalization tests
-sf apex test run --tests ProductsTest.testNormalizeRatesBelowMinimum --synchronous
-sf apex test run --tests ProductRateNormalizationServiceTest.testNormalizeProductRatesWithData --synchronous
-sf apex test run --tests ProductRateNormalizationBatchTest.testBatchBulkProcessing --synchronous
-```
-
-#### All Tests Combined
-```bash
-# Run all tests for both stories
-sf apex test run \
-  --classnames LoanApplicationsSelectorTest,ContactsSelectorTest,LoanApplicationsTest,LoanApplicationsTriggerHandlerTest,ProductsTest,ProductRateNormalizationServiceTest,ProductRateNormalizationBatchTest,ProductRateNormalizationSchedulerTest \
-  --result-format human \
-  --code-coverage \
-  --wait 15
-```
+<img width="523" height="173" alt="image" src="https://github.com/user-attachments/assets/9cca7755-06be-4086-b491-c02bcf006f29" />
 
 ### Test Coverage
-
-#### Story A: Loan Application Tests
 - **Selector Tests**: `LoanApplicationsSelectorTest`, `ContactsSelectorTest` - Data access layer validation
-- **Domain Tests**: `LoanApplicationsTest` - Business logic validation  
+- **Domain Tests**: `LoanApplicationsTest`, `ProductsTest` - Business logic validation  
 - **Trigger Tests**: `LoanApplicationsTriggerHandlerTest` - End-to-end trigger workflow testing
->>>>>>> 19d66e32f0c61ac94b16eab6070def501e530cd5
 
 #### Story B: Product Rate Normalization Tests
 - **Domain Tests**: `ProductsTest` - Rate normalization business logic validation
@@ -148,8 +112,8 @@ sf apex test run \
 ### Design Notes & Trade-offs
 
 **Architecture Decisions:**
-- **Domain Layer**: `LoanApplicationDomain` — validation, approval, rejection rules  
-- **Service Layer**: `LoanApplicationService` — orchestrates selectors, domain decisions, and DML  
+- **Domain Layer**: `LoanApplications` — validation, approval, rejection rules  
+- **Service Layer**: `LoanApplicationServiceImpl` — orchestrates selectors, domain decisions, and DML  
 - **Selector Layer**: `ContactsSelector`, `ProductsSelector`, `LoanApplicationsSelector` — data access  
 - **Trigger**: Thin trigger delegates work to service layer 
 
@@ -213,7 +177,6 @@ List<Task> tasks = [SELECT Subject, Status FROM Task WHERE WhatId = :app.Id];
 System.debug('Tasks created: ' + tasks.size());
 ```
 
-<<<<<<< HEAD
 ## Story B: Product Rate Normalization
 
 ## Testing Demo
@@ -239,7 +202,7 @@ sf apex test run \
 **Design Notes & Trade-offs**
 
 **Architecture Decisions:**
-* **Domain Layer**: `ProductsDomain` — rate normalization business logic (0.5% - 15% bounds)
+* **Domain Layer**: `Products` — rate normalization business logic (0.5% - 15% bounds)
 * **Service Layer**: `ProductRateNormalizationService` — orchestrates normalization process with constants
 * **Selector Layer**: `ProductsSelector` — efficient querying of products needing normalization
 * **Async Layer**: `ProductRateNormalizationBatch` — batchable implementation for background processing
@@ -251,9 +214,6 @@ sf apex test run \
 * **Testing**: Focused on core functionality testing, would expand negative scenarios and governor limit edge cases given more time
 
 ### Manual Testing Scripts
-=======
-## Story B: Product Rate Normalization Manual Testing
->>>>>>> 19d66e32f0c61ac94b16eab6070def501e530cd5
 
 #### 1. Reset Script (Run First)
 ```apex
@@ -381,7 +341,6 @@ System.debug('Records unchanged: ' + unchanged);
 System.debug('Total records processed: ' + finalResults.size());
 ```
 
-<<<<<<< HEAD
 #### 7. Test Scheduler Functionality
 ```apex
 // SETUP AND TEST SCHEDULER
@@ -390,18 +349,10 @@ System.debug('=== SCHEDULER TESTING ===');
 // Setup nightly scheduler
 ProductRateNormalizationScheduler.setupSchedule();
 System.debug('Nightly scheduler setup complete');
-=======
-#### 7. Schedule Job Setup (Optional)
-```apex
-// SETUP NIGHTLY SCHEDULER
-System.debug('=== SCHEDULER SETUP ===');
-ProductRateNormalizationScheduler.setupSchedule();
->>>>>>> 19d66e32f0c61ac94b16eab6070def501e530cd5
 
 // Check scheduled jobs
 List<CronTrigger> jobs = ProductRateNormalizationScheduler.getScheduledJobs();
 for(CronTrigger job : jobs) {
-<<<<<<< HEAD
     System.debug('Scheduled Job: ' + job.CronJobDetail.Name);
     System.debug('Cron Expression: ' + job.CronExpression);
     System.debug('Next Run Time: ' + job.NextFireTime);
@@ -492,13 +443,6 @@ for(Product__c p : currentProducts) {
     }
     System.debug(p.Name + ': ' + (p.Base_Rate__c != null ? (p.Base_Rate__c * 100) + '%' : 'NULL') + ' (' + status + ')');
 }
-=======
-    System.debug('Job: ' + job.CronJobDetail.Name + ' | Next Run: ' + job.NextFireTime);
-}
-
-// To cancel if needed:
-// ProductRateNormalizationScheduler.cancelScheduledJob('Product Rate Normalization - Nightly');
->>>>>>> 19d66e32f0c61ac94b16eab6070def501e530cd5
 ```
 
 ## Development Setup
