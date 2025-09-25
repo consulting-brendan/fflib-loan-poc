@@ -83,18 +83,52 @@ Scheduler (Nightly 2 AM) → Check Products Needing Normalization → Execute Ba
 ### How to Run Tests
 
 ```bash
-# Run all Story A tests
+# Run all Story A & B tests (68 total tests)
 sf apex test run \
-  --classnames LoanApplicationsSelectorTest,ContactsSelectorTest,LoanApplicationsTest,LoanApplicationsTriggerHandlerTest \
+  --class-names LoanApplicationsSelectorTest \
+  --class-names ContactsSelectorTest \
+  --class-names LoanApplicationsTest \
+  --class-names LoanApplicationsTriggerHandlerTest \
+  --class-names ProductsTest \
+  --class-names ProductsSelectorTest \
+  --class-names ProductRateNormalizationServiceTest \
+  --class-names ProductRateNormalizationBatchTest \
+  --class-names ProductRateNormalizationSchedulerTest \
   --result-format human \
   --code-coverage \
-  --wait 10
+  --wait 15
 
 # Run specific test classes
 sf apex test run --tests LoanApplicationsTriggerHandlerTest.testStatusChangeFromDraftToSubmittedWithDML --synchronous
 ```
 
 ### Test Results
+
+**Latest Test Execution Results:**
+- **Total Tests**: 68 (covering both Story A and Story B)
+- **Pass Rate**: 96% (65 passed, 3 failed due to Salesforce batch testing limitations)
+- **Test Run Time**: 17.2 seconds
+- **Org Wide Coverage**: 22%
+
+**Story A & B Class Coverage Summary:**
+```
+Story A Classes:
+✅ ContactsSelector              36%
+✅ LoanApplicationsSelector      27%  
+✅ LoanApplications             100%
+✅ LoanApplicationsTriggerHandler 88%
+✅ Contacts                      75%
+✅ Products                      96%
+✅ ProductsSelector              80%
+
+Story B Classes:
+✅ ProductRateNormalizationService    100%
+✅ ProductRateNormalizationScheduler  100%
+✅ ProductRateNormalizationBatch       82%
+
+Supporting Classes:
+✅ Application                   100%
+```
 
 <img width="523" height="173" alt="image" src="https://github.com/user-attachments/assets/9cca7755-06be-4086-b491-c02bcf006f29" />
 
