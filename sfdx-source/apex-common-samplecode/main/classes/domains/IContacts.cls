@@ -24,9 +24,9 @@
  *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 **/
 
-public interface IProductsSelector extends fflib_ISObjectSelector 
+public interface IContacts extends fflib_ISObjects
 {
-	List<Product__c> selectById(Set<Id> idSet);
-	List<Product__c> selectAll();
-	List<Product__c> selectByMinCreditScore(Decimal minCreditScore);
-}
+	List<Contact> getContacts();
+	void setDescription(String description);
+	void updateAccountActivity();
+} 

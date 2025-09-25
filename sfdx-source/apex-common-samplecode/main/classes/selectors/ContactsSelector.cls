@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2012-2014, FinancialForce.com, inc
+ * Copyright (c) 2013-2016, FinancialForce.com, inc
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -24,9 +24,64 @@
  *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 **/
 
-public interface IProductsSelector extends fflib_ISObjectSelector 
+/**
+ * This is a basic selector for Contact for this app, note how it implements selectByAccount
+ **/
+public class ContactsSelector extends fflib_SObjectSelector
+	implements IContactsSelector
 {
-	List<Product__c> selectById(Set<Id> idSet);
-	List<Product__c> selectAll();
-	List<Product__c> selectByMinCreditScore(Decimal minCreditScore);
-}
+	public static IContactsSelector newInstance()
+	{
+		return (IContactsSelector) Application.Selector.newInstance(Contact.SObjectType);
+	}
+	
+	public List<Schema.SObjectField> getSObjectFieldList()
+	{
+		return new List<Schema.SObjectField> {
+			Contact.Id,
+			Contact.FirstName,
+			Contact.LastName,
+			Contact.Email,
+			Contact.Description,
+			Contact.AccountId,
+			Contact.Annual_Income__c,
+			Contact.Credit_Score__c
+		};
+	}
+
+	public Schema.SObjectType getSObjectType()
+	{
+		return Contact.SObjectType;
+	}
+
+	public List<Contact> selectById(Set<Id> idSet)
+	{
+		return (List<Contact>) selectSObjectsById(idSet);
+	}
+		
+	public List<Contact> selectByAccount(List<Account> accounts)
+	{
+		// Contacts that belong to the specified accounts
+		Set<Id> accountIds = new Set<Id>();
+		for (Account acc : (List<Account>) accounts)
+		{
+			if (acc.Id != null)
+			{
+				accountIds.add(acc.Id);
+			}
+		}
+		
+		// If no accounts provided, return empty list
+		if (accountIds.isEmpty())
+		{
+			return new List<Contact>();
+		}
+		
+		return (List<Contact>) Database.query(
+			newQueryFactory()
+				.assertIsAccessible()
+				.setEnforceFLS(true)
+				.setCondition('AccountId IN :accountIds')
+				.toSOQL());
+	}	
+} 

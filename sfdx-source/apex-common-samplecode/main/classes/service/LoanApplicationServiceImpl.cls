@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2012-2014, FinancialForce.com, inc
+ * Copyright (c) 2013-2016, FinancialForce.com, inc
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -24,9 +24,22 @@
  *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 **/
 
-public interface IProductsSelector extends fflib_ISObjectSelector 
+public with sharing class LoanApplicationServiceImpl implements ILoanApplicationService
 {
-	List<Product__c> selectById(Set<Id> idSet);
-	List<Product__c> selectAll();
-	List<Product__c> selectByMinCreditScore(Decimal minCreditScore);
-}
+	public void submitApplications(Set<Id> applicationIds)
+	{
+		// Create unit of work to manage the transaction
+		fflib_ISObjectUnitOfWork uow = Application.UnitOfWork.newInstance();
+		
+		// Get loan applications to process
+		List<Loan_Application__c> applications = 
+			LoanApplicationsSelector.newInstance().selectById(applicationIds);
+		
+		// Process applications through domain logic
+		ILoanApplications loanApplications = LoanApplications.newInstance(applications);
+		loanApplications.submitApplications(uow);
+		
+		// Commit all changes
+		uow.commitWork();
+	}
+} 

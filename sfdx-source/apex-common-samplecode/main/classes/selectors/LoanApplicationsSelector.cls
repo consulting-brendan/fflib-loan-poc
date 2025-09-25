@@ -24,50 +24,57 @@
  *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 **/
 
-public class ProductsSelector extends fflib_SObjectSelector
-	implements IProductsSelector
+public class LoanApplicationsSelector extends fflib_SObjectSelector
+	implements ILoanApplicationsSelector
 {
-	public static IProductsSelector newInstance()
+	public static ILoanApplicationsSelector newInstance()
 	{
-		return (IProductsSelector) Application.Selector.newInstance(Product__c.SObjectType);
+		return (ILoanApplicationsSelector) Application.Selector.newInstance(Loan_Application__c.SObjectType);
 	}
 	
 	public List<Schema.SObjectField> getSObjectFieldList()
 	{
 		return new List<Schema.SObjectField> {
-			Product__c.Id,
-			Product__c.Name,
-			Product__c.Min_Credit_Score__c,
-			Product__c.Base_Rate__c
+			Loan_Application__c.Id,
+			Loan_Application__c.Name,
+			Loan_Application__c.Borrower__c,
+			Loan_Application__c.Amount__c,
+			Loan_Application__c.Status__c,
+			Loan_Application__c.Product__c,
+			Loan_Application__c.Approval_Outcome__c
 		};
 	}
 
 	public Schema.SObjectType getSObjectType()
 	{
-		return Product__c.SObjectType;
+		return Loan_Application__c.SObjectType;
 	}
 
-	public List<Product__c> selectById(Set<Id> idSet)
+	public List<Loan_Application__c> selectById(Set<Id> idSet)
 	{
-		return (List<Product__c>) selectSObjectsById(idSet);
+		System.debug('LoanApplicationsSelector.selectById() - Querying ' + idSet.size() + ' IDs: ' + idSet);
+		List<Loan_Application__c> results = (List<Loan_Application__c>) selectSObjectsById(idSet);
+		System.debug('LoanApplicationsSelector.selectById() - Found ' + results.size() + ' records');
+		return results;
 	}
 
-	public List<Product__c> selectAll()
+	public List<Loan_Application__c> selectByBorrower(Set<Id> borrowerIds)
 	{
-		return (List<Product__c>) Database.query(
+		return (List<Loan_Application__c>) Database.query(
 			newQueryFactory()
 				.assertIsAccessible()
 				.setEnforceFLS(true)
+				.setCondition('Borrower__c IN :borrowerIds')
 				.toSOQL());
 	}
 		
-	public List<Product__c> selectByMinCreditScore(Decimal minCreditScore)
+	public List<Loan_Application__c> selectByStatus(String status)
 	{
-		return (List<Product__c>) Database.query(
+		return (List<Loan_Application__c>) Database.query(
 			newQueryFactory()
 				.assertIsAccessible()
 				.setEnforceFLS(true)
-				.setCondition('Min_Credit_Score__c <= :minCreditScore')
+				.setCondition('Status__c = :status')
 				.toSOQL());
 	}
-}
+} 

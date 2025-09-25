@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2012-2014, FinancialForce.com, inc
+ * Copyright (c) 2013, FinancialForce.com, inc
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -24,9 +24,10 @@
  *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 **/
 
-public interface IProductsSelector extends fflib_ISObjectSelector 
+trigger LoanApplications on Loan_Application__c (
+	after delete, after insert, after update, before delete, before insert, before update) 
 {
-	List<Product__c> selectById(Set<Id> idSet);
-	List<Product__c> selectAll();
-	List<Product__c> selectByMinCreditScore(Decimal minCreditScore);
-}
+	System.debug('LoanApplications trigger fired - Context: ' + Trigger.operationType + ', Size: ' + Trigger.size);
+	// Creates Domain class instance and calls appropriate overrideable methods according to Trigger state
+	fflib_SObjectDomain.triggerHandler(LoanApplicationsTriggerHandler.class);
+} 

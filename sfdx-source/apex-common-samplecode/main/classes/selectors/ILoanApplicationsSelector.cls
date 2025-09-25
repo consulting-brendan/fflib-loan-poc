@@ -24,9 +24,9 @@
  *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 **/
 
-public interface IProductsSelector extends fflib_ISObjectSelector 
+public interface ILoanApplicationsSelector extends fflib_ISObjectSelector 
 {
-	List<Product__c> selectById(Set<Id> idSet);
-	List<Product__c> selectAll();
-	List<Product__c> selectByMinCreditScore(Decimal minCreditScore);
-}
+	List<Loan_Application__c> selectById(Set<Id> idSet);
+	List<Loan_Application__c> selectByBorrower(Set<Id> borrowerIds);
+	List<Loan_Application__c> selectByStatus(String status);
+} 

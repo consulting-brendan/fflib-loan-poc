@@ -31,12 +31,16 @@ public class Application
 		new fflib_Application.UnitOfWorkFactory(
 				new List<SObjectType> {
 					Account.SObjectType,
+					Contact.SObjectType,
 					Invoice__c.SObjectType,
 					InvoiceLine__c.SObjectType,
+					Loan_Application__c.SObjectType,
 					Opportunity.SObjectType,
+					Product__c.SObjectType,
 					Product2.SObjectType,
 					PricebookEntry.SObjectType,
 					OpportunityLineItem.SObjectType,
+					Task.SObjectType,
 					WorkOrder__c.SObjectType,
 					DeveloperWorkItem__c.SObjectType,
 					TrainingWorkItem__c.SObjectType,
@@ -47,6 +51,7 @@ public class Application
 		new fflib_Application.ServiceFactory( 
 			new Map<Type, Type> {
 					IAccountsService.class => AccountsServiceImpl.class,
+					ILoanApplicationService.class => LoanApplicationServiceImpl.class,
 					IOpportunitiesService.class => OpportunitiesServiceImpl.class,
 					IInvoicingService.class => InvoicingServiceImpl.class });
 
@@ -55,11 +60,13 @@ public class Application
 		new fflib_Application.SelectorFactory(
 			new Map<SObjectType, Type> {
 					Account.SObjectType => AccountsSelector.class,
+					Contact.SObjectType => ContactsSelector.class,
+					Loan_Application__c.SObjectType => LoanApplicationsSelector.class,
 					Opportunity.SObjectType => OpportunitiesSelector.class,
 					OpportunityLineItem.SObjectType => OpportunityLineItemsSelector.class,
 					PricebookEntry.SObjectType => PricebookEntriesSelector.class,
 					Pricebook2.SObjectType => PricebooksSelector.class,
-					Product2.SObjectType => ProductsSelector.class,
+					Product__c.SObjectType => ProductsSelector.class,
 					User.sObjectType => UsersSelector.class });
 
 	// Configure and create the DomainFactory for this Application
@@ -67,8 +74,11 @@ public class Application
 		new fflib_Application.DomainFactory(
 			Application.Selector,
 			new Map<SObjectType, Type> {
+					Account.SObjectType => Accounts.Constructor.class,
+					Contact.SObjectType => Contacts.Constructor.class,
+					Loan_Application__c.SObjectType => LoanApplications.Constructor.class,
 					Opportunity.SObjectType => Opportunities.Constructor.class,
 					OpportunityLineItem.SObjectType => OpportunityLineItems.Constructor.class,
-					Account.SObjectType => Accounts.Constructor.class,
+					Product__c.SObjectType => Products.Constructor.class,
 					DeveloperWorkItem__c.SObjectType => DeveloperWorkItems.class });
 }

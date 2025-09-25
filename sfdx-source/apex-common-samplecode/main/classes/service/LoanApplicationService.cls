@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2012-2014, FinancialForce.com, inc
+ * Copyright (c) 2013-2016, FinancialForce.com, inc
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -24,9 +24,15 @@
  *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 **/
 
-public interface IProductsSelector extends fflib_ISObjectSelector 
+public class LoanApplicationService
 {
-	List<Product__c> selectById(Set<Id> idSet);
-	List<Product__c> selectAll();
-	List<Product__c> selectByMinCreditScore(Decimal minCreditScore);
-}
+	public static void submitApplications(Set<Id> applicationIds)
+	{
+		service().submitApplications(applicationIds);
+	}
+
+	private static ILoanApplicationService service()
+	{
+		return (ILoanApplicationService) Application.Service.newInstance(ILoanApplicationService.class);
+	}
+} 
