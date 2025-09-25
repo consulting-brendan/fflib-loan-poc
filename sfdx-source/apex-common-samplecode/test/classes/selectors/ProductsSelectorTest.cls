@@ -31,45 +31,76 @@ private class ProductsSelectorTest
 	private static void testSelectById()
 	{
 		// Test data
-		Product2 product = new Product2();
-		product.Description = 'Something cool';
+		Product__c product = new Product__c();
 		product.Name = 'CoolItem';
-		product.IsActive = true;
-		product.SubscriberField__c = 'My Text Field';
+		product.Min_Credit_Score__c = 650;
+		product.Base_Rate__c = 0.08;
 		insert product;
 				
 		// Query
-		List<Product2> products = 
-			new ProductsSelector(true).selectById(new Set<Id> { product.Id });
+		List<Product__c> products = 
+			ProductsSelector.newInstance().selectById(new Set<Id> { product.Id });
 			
 		// Assert
-		System.assertEquals('Something cool', products[0].Description);		
+		System.assertEquals(1, products.size());
 		System.assertEquals('CoolItem', products[0].Name);		
-		System.assertEquals(true, products[0].IsActive);		
-		System.assertEquals('My Text Field', products[0].SubscriberField__c);		
+		System.assertEquals(650, products[0].Min_Credit_Score__c);		
+		System.assertEquals(0.08, products[0].Base_Rate__c);		
 	}
 
 	@IsTest
-	private static void testQueryLocatorById()
+	private static void testSelectAll()
 	{
 		// Test data
-		Product2 product = new Product2();
-		product.Description = 'Something cool';
-		product.Name = 'CoolItem';
-		product.IsActive = true;
-		product.SubscriberField__c = 'My Text Field';
-		insert product;
+		List<Product__c> testProducts = new List<Product__c>{
+			new Product__c(Name = 'Product 1', Min_Credit_Score__c = 600, Base_Rate__c = 0.05),
+			new Product__c(Name = 'Product 2', Min_Credit_Score__c = 700, Base_Rate__c = 0.08),
+			new Product__c(Name = 'Product 3', Min_Credit_Score__c = 800, Base_Rate__c = 0.10)
+		};
+		insert testProducts;
 				
 		// Query
-		Database.QueryLocator queryLocator = 
-			new ProductsSelector(true).queryLocatorById(new Set<Id> { product.Id });
+		List<Product__c> products = ProductsSelector.newInstance().selectAll();
 			
 		// Assert
-		Database.QueryLocatorIterator productsIterator = queryLocator.iterator();
-		Product2 queriedProduct = (Product2) productsIterator.next();
-		System.assertEquals('Something cool', queriedProduct.Description);		
-		System.assertEquals('CoolItem', queriedProduct.Name);		
-		System.assertEquals(true, queriedProduct.IsActive);		
-		System.assertEquals('My Text Field', queriedProduct.SubscriberField__c);		
+		System.assert(products.size() >= 3, 'Should return at least the test products');
+		
+		// Find our test products
+		Map<String, Product__c> productsByName = new Map<String, Product__c>();
+		for (Product__c p : products) {
+			productsByName.put(p.Name, p);
+		}
+		
+		System.assert(productsByName.containsKey('Product 1'));
+		System.assert(productsByName.containsKey('Product 2'));
+		System.assert(productsByName.containsKey('Product 3'));
+	}
+
+	@IsTest
+	private static void testSelectProductsNeedingRateNormalization()
+	{
+		// Test data - products outside normal range
+		List<Product__c> testProducts = new List<Product__c>{
+			new Product__c(Name = 'Too Low Rate', Min_Credit_Score__c = 600, Base_Rate__c = 0.001), // 0.1%
+			new Product__c(Name = 'Too High Rate', Min_Credit_Score__c = 700, Base_Rate__c = 0.18),  // 18%
+			new Product__c(Name = 'Normal Rate', Min_Credit_Score__c = 800, Base_Rate__c = 0.06)     // 6%
+		};
+		insert testProducts;
+				
+		// Query
+		List<Product__c> productsNeedingNormalization = 
+			ProductsSelector.newInstance().selectProductsNeedingRateNormalization();
+			
+		// Assert
+		System.assertEquals(2, productsNeedingNormalization.size());
+		
+		Set<String> productNames = new Set<String>();
+		for (Product__c p : productsNeedingNormalization) {
+			productNames.add(p.Name);
+		}
+		
+		System.assert(productNames.contains('Too Low Rate'));
+		System.assert(productNames.contains('Too High Rate'));
+		System.assert(!productNames.contains('Normal Rate'));
 	}
 }
