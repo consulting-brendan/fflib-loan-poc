@@ -4,10 +4,11 @@ A Salesforce proof-of-concept implementing a simplified mortgage application pro
 
 ## Project Structure
 
-The solution implements loan application processing using fflib architecture:
-- **Loan Application Processing**: Submit Application (validation, product selection, task creation)
+The solution implements two main business processes using fflib architecture:
+- **Story A - Loan Application Processing**: Submit Application (validation, product selection, task creation)
+- **Story B - Product Rate Normalization**: Automated rate boundary enforcement (async batch processing)
 
-## Loan Application Processing
+## Story A: Loan Application Processing
 
 ### Process Flow
 ```
@@ -44,23 +45,87 @@ Broker → Create Contact → Create Product → Create Loan Application → Upd
 - **`Contacts.cls`** - Contact domain logic for activity updates
 - **`IContacts.cls`** - Interface for contact domain operations
 
+## Story B: Product Rate Normalization (Async)
+
+### Process Flow
+```
+Scheduler (Nightly 2 AM) → Check Products Needing Normalization → Execute Batch Job → Normalize Rates → Update Products
+```
+
+### Business Rules
+- **Minimum Rate**: 0.5% (Products below this are normalized to 0.5%)
+- **Maximum Rate**: 15% (Products above this are normalized to 15%)
+- **Bulk Processing**: Handles large datasets with configurable batch sizes
+- **Scheduled Execution**: Runs nightly at 2 AM by default
+
+### Architecture Components
+
+#### Service Layer
+- **`ProductRateNormalizationService.cls`** - Orchestrates synchronous rate normalization
+- Static methods for on-demand processing and count queries
+
+#### Batch Processing
+- **`ProductRateNormalizationBatch.cls`** - Implements Database.Batchable for async bulk processing
+- **`ProductRateNormalizationScheduler.cls`** - Implements Schedulable for nightly automation
+
+#### Enhanced Domain & Selector Layers
+- **`Products.cls`** - Enhanced with rate normalization business logic
+- **`IProducts.cls`** - Extended interface for normalization operations
+- **`ProductsSelector.cls`** - Enhanced with rate normalization queries
+- **`IProductsSelector.cls`** - Extended interface for normalization selectors
+
 ### How to Run Tests
+
+#### Story A: Loan Application Tests
 ```bash
 # Run all Loan Application tests
 sf apex test run \
-  --classnames LoanApplicationsSelectorTest,ContactsSelectorTest,LoanApplicationsTest,ProductsTest,LoanApplicationsTriggerHandlerTest \
+  --classnames LoanApplicationsSelectorTest,ContactsSelectorTest,LoanApplicationsTest,LoanApplicationsTriggerHandlerTest \
   --result-format human \
   --code-coverage \
   --wait 10
 
-# Run specific test classes
+# Run specific test
 sf apex test run --tests LoanApplicationsTriggerHandlerTest.testStatusChangeFromDraftToSubmittedWithDML --synchronous
 ```
 
+#### Story B: Product Rate Normalization Tests
+```bash
+# Run all Product Rate Normalization tests
+sf apex test run \
+  --classnames ProductsTest,ProductRateNormalizationServiceTest,ProductRateNormalizationBatchTest,ProductRateNormalizationSchedulerTest \
+  --result-format human \
+  --code-coverage \
+  --wait 10
+
+# Run specific rate normalization tests
+sf apex test run --tests ProductsTest.testNormalizeRatesBelowMinimum --synchronous
+sf apex test run --tests ProductRateNormalizationServiceTest.testNormalizeProductRatesWithData --synchronous
+sf apex test run --tests ProductRateNormalizationBatchTest.testBatchBulkProcessing --synchronous
+```
+
+#### All Tests Combined
+```bash
+# Run all tests for both stories
+sf apex test run \
+  --classnames LoanApplicationsSelectorTest,ContactsSelectorTest,LoanApplicationsTest,LoanApplicationsTriggerHandlerTest,ProductsTest,ProductRateNormalizationServiceTest,ProductRateNormalizationBatchTest,ProductRateNormalizationSchedulerTest \
+  --result-format human \
+  --code-coverage \
+  --wait 15
+```
+
 ### Test Coverage
+
+#### Story A: Loan Application Tests
 - **Selector Tests**: `LoanApplicationsSelectorTest`, `ContactsSelectorTest` - Data access layer validation
-- **Domain Tests**: `LoanApplicationsTest`, `ProductsTest` - Business logic validation  
+- **Domain Tests**: `LoanApplicationsTest` - Business logic validation  
 - **Trigger Tests**: `LoanApplicationsTriggerHandlerTest` - End-to-end trigger workflow testing
+
+#### Story B: Product Rate Normalization Tests
+- **Domain Tests**: `ProductsTest` - Rate normalization business logic validation
+- **Service Tests**: `ProductRateNormalizationServiceTest` - Service orchestration and bulk processing
+- **Batch Tests**: `ProductRateNormalizationBatchTest` - Asynchronous batch job execution 
+- **Scheduler Tests**: `ProductRateNormalizationSchedulerTest` - Scheduled job management and automation
 
 ### Design Notes & Trade-offs
 
@@ -91,7 +156,9 @@ sf apex test run --tests LoanApplicationsTriggerHandlerTest.testStatusChangeFrom
 - **Error Handling**: Basic validation with field-level error attachment
 - **Testing**: Comprehensive unit and integration tests with fflib mocking patterns
 
-### Manual Testing Workflow
+### Manual Testing Workflows
+
+## Story A: Loan Application Manual Testing
 
 #### 1. Create Test Data
 ```apex
@@ -139,6 +206,150 @@ System.debug('Outcome: ' + result.Approval_Outcome__c);
 // Check created task
 List<Task> tasks = [SELECT Subject, Status FROM Task WHERE WhatId = :app.Id];
 System.debug('Tasks created: ' + tasks.size());
+```
+
+## Story B: Product Rate Normalization Manual Testing
+
+#### 1. Reset Script (Run First)
+```apex
+// RESET - Clean slate for testing
+delete [SELECT Id FROM Product__c];
+System.debug('All products deleted - ready for fresh test data');
+```
+
+#### 2. Create Test Data
+```apex
+// CREATE TEST DATA
+System.debug('=== CREATING TEST DATA ===');
+List<Product__c> testProducts = new List<Product__c>{
+    new Product__c(Name = 'Too Low Rate', Base_Rate__c = 0.001, Min_Credit_Score__c = 600),      // 0.1%
+    new Product__c(Name = 'Way Too Low', Base_Rate__c = 0.0001, Min_Credit_Score__c = 650),     // 0.01%
+    new Product__c(Name = 'Too High Rate', Base_Rate__c = 0.18, Min_Credit_Score__c = 700),     // 18%
+    new Product__c(Name = 'Way Too High', Base_Rate__c = 0.25, Min_Credit_Score__c = 750),      // 25%
+    new Product__c(Name = 'Just Right Low', Base_Rate__c = 0.005, Min_Credit_Score__c = 580),   // 0.5%
+    new Product__c(Name = 'Just Right High', Base_Rate__c = 0.15, Min_Credit_Score__c = 800),   // 15%
+    new Product__c(Name = 'Normal Rate', Base_Rate__c = 0.06, Min_Credit_Score__c = 680)        // 6%
+};
+
+insert testProducts;
+
+System.debug('Initial data created:');
+List<Product__c> initial = [SELECT Name, Base_Rate__c FROM Product__c ORDER BY Base_Rate__c];
+for(Product__c p : initial) {
+    System.debug(p.Name + ': ' + (p.Base_Rate__c * 100) + '%');
+}
+```
+
+#### 3. Test Service Layer (Synchronous)
+```apex
+// TEST SERVICE LAYER
+System.debug('=== TESTING SERVICE LAYER ===');
+
+System.debug('Before service normalization:');
+List<Product__c> beforeService = [SELECT Name, Base_Rate__c FROM Product__c ORDER BY Base_Rate__c];
+for(Product__c p : beforeService) {
+    System.debug(p.Name + ': ' + (p.Base_Rate__c * 100) + '%');
+}
+
+ProductRateNormalizationService.normalizeProductRates();
+
+System.debug('After service normalization:');
+List<Product__c> afterService = [SELECT Name, Base_Rate__c FROM Product__c ORDER BY Base_Rate__c];
+for(Product__c p : afterService) {
+    System.debug(p.Name + ': ' + (p.Base_Rate__c * 100) + '%');
+}
+```
+
+#### 4. Reset for Batch Test
+```apex
+// RESET FOR BATCH TEST
+System.debug('=== RESETTING FOR BATCH TEST ===');
+List<Product__c> productsToReset = [SELECT Id, Name FROM Product__c];
+for(Product__c p : productsToReset) {
+    if(p.Name == 'Too Low Rate') {
+        p.Base_Rate__c = 0.001;
+    } else if(p.Name == 'Way Too Low') {
+        p.Base_Rate__c = 0.0001;
+    } else if(p.Name == 'Too High Rate') {
+        p.Base_Rate__c = 0.18;
+    } else if(p.Name == 'Way Too High') {
+        p.Base_Rate__c = 0.25;
+    } else if(p.Name == 'Just Right Low') {
+        p.Base_Rate__c = 0.005;
+    } else if(p.Name == 'Just Right High') {
+        p.Base_Rate__c = 0.15;
+    } else if(p.Name == 'Normal Rate') {
+        p.Base_Rate__c = 0.06;
+    }
+}
+update productsToReset;
+
+System.debug('Data reset for batch test:');
+List<Product__c> beforeBatch = [SELECT Name, Base_Rate__c FROM Product__c ORDER BY Base_Rate__c];
+for(Product__c p : beforeBatch) {
+    System.debug(p.Name + ': ' + (p.Base_Rate__c * 100) + '%');
+}
+```
+
+#### 5. Execute Batch Job (Asynchronous)
+```apex
+// EXECUTE BATCH JOB
+System.debug('=== EXECUTING BATCH JOB ===');
+ProductRateNormalizationBatch batch = new ProductRateNormalizationBatch();
+Id batchId = Database.executeBatch(batch, 200);
+System.debug('Batch Job ID: ' + batchId);
+System.debug('Check Setup > Apex Jobs for completion status');
+System.debug('Run verification script after batch completes');
+```
+
+#### 6. Verify Batch Results (Run After Batch Completes)
+```apex
+// VERIFY BATCH RESULTS - Run after batch job completes
+System.debug('=== FINAL VERIFICATION - BATCH RESULTS ===');
+List<Product__c> finalResults = [SELECT Name, Base_Rate__c FROM Product__c ORDER BY Base_Rate__c];
+
+Integer normalizedToLower = 0;
+Integer normalizedToUpper = 0;
+Integer unchanged = 0;
+
+for(Product__c p : finalResults) {
+    String status = '';
+    if(p.Base_Rate__c == 0.005) {
+        status = ' (normalized to lower bound 0.5%)';
+        normalizedToLower++;
+    } else if(p.Base_Rate__c == 0.15) {
+        status = ' (normalized to upper bound 15%)';
+        normalizedToUpper++;
+    } else {
+        status = ' (unchanged - within range)';
+        unchanged++;
+    }
+    
+    System.debug(p.Name + ': ' + (p.Base_Rate__c * 100) + '%' + status);
+}
+
+System.debug('');
+System.debug('=== SUMMARY ===');
+System.debug('Records normalized to lower bound: ' + normalizedToLower);
+System.debug('Records normalized to upper bound: ' + normalizedToUpper);
+System.debug('Records unchanged: ' + unchanged);
+System.debug('Total records processed: ' + finalResults.size());
+```
+
+#### 7. Schedule Job Setup (Optional)
+```apex
+// SETUP NIGHTLY SCHEDULER
+System.debug('=== SCHEDULER SETUP ===');
+ProductRateNormalizationScheduler.setupSchedule();
+
+// Check scheduled jobs
+List<CronTrigger> jobs = ProductRateNormalizationScheduler.getScheduledJobs();
+for(CronTrigger job : jobs) {
+    System.debug('Job: ' + job.CronJobDetail.Name + ' | Next Run: ' + job.NextFireTime);
+}
+
+// To cancel if needed:
+// ProductRateNormalizationScheduler.cancelScheduledJob('Product Rate Normalization - Nightly');
 ```
 
 ## Development Setup
