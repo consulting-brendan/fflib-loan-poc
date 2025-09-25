@@ -10,11 +10,7 @@ The solution implements two main user stories using fflib architecture:
 
 ## Story A: Submit Application
 
-## Process Demo
-
 **[▶️ Watch Story A Demo](https://www.loom.com/share/ddc1f73cd4374af58730cef73fbc5828?sid=ce6761bb-6599-46a3-88ff-04c43612fae6)**
-
-See the loan application submission workflow in action - from creating Loan Application, linking product and contacts to automatic approval and task assignment.
 
 ### Process Flow
 ```
@@ -51,67 +47,35 @@ Broker → Create Contact → Create Product → Create Loan Application → Upd
 - **`Contacts.cls`** - Contact domain logic for activity updates
 - **`IContacts.cls`** - Interface for contact domain operations
 
-## Story B: Product Rate Normalization (Async)
-
-### Process Flow
-```
-Scheduler (Nightly 2 AM) → Check Products Needing Normalization → Execute Batch Job → Normalize Rates → Update Products
-```
-
-### Business Rules
-- **Minimum Rate**: 0.5% (Products below this are normalized to 0.5%)
-- **Maximum Rate**: 15% (Products above this are normalized to 15%)
-- **Bulk Processing**: Handles large datasets with configurable batch sizes
-- **Scheduled Execution**: Runs nightly at 2 AM by default
-
-### Architecture Components
-
-#### Service Layer
-- **`ProductRateNormalizationService.cls`** - Orchestrates synchronous rate normalization
-- Static methods for on-demand processing and count queries
-
-#### Batch Processing
-- **`ProductRateNormalizationBatch.cls`** - Implements Database.Batchable for async bulk processing
-- **`ProductRateNormalizationScheduler.cls`** - Implements Schedulable for nightly automation
-
-#### Enhanced Domain & Selector Layers
-- **`Products.cls`** - Enhanced with rate normalization business logic
-- **`IProducts.cls`** - Extended interface for normalization operations
-- **`ProductsSelector.cls`** - Enhanced with rate normalization queries
-- **`IProductsSelector.cls`** - Extended interface for normalization selectors
-
-### How to Run Tests
+### How to Run Story A Tests
 
 ```bash
-# Run all Story A & B tests (68 total tests)
+# Run Story A selector tests with improved coverage
+sf apex run test --test-level RunSpecifiedTests \
+  --tests ContactsSelectorTest \
+  --tests LoanApplicationsSelectorTest \
+  --code-coverage --result-format human --wait 15
+
+# Run Story A domain and trigger tests
 sf apex test run \
-  --class-names LoanApplicationsSelectorTest \
-  --class-names ContactsSelectorTest \
   --class-names LoanApplicationsTest \
   --class-names LoanApplicationsTriggerHandlerTest \
-  --class-names ProductsTest \
-  --class-names ProductsSelectorTest \
-  --class-names ProductRateNormalizationServiceTest \
-  --class-names ProductRateNormalizationBatchTest \
-  --class-names ProductRateNormalizationSchedulerTest \
   --result-format human \
   --code-coverage \
   --wait 15
-
-# Run specific test classes
-sf apex test run --tests LoanApplicationsTriggerHandlerTest.testStatusChangeFromDraftToSubmittedWithDML --synchronous
 ```
 
-### Test Results
+### Test Results - Story A
 
 **Latest Test Execution Results:**
-- **Total Tests**: 68 (covering both Story A and Story B)
-- **Pass Rate**: 96% (65 passed, 3 failed due to Salesforce batch testing limitations)
-- **Test Run Time**: 17.2 seconds
-- **Org Wide Coverage**: 22%
+- **ContactsSelectorTest**: 12 tests executed, 100% pass rate
+- **LoanApplicationsSelectorTest**: 13 tests executed, 100% pass rate
+- **Total Tests**: 25 selector tests (up from 8)
+- **Test Execution Time**: 2.68 seconds
 
-**Story A & B Class Coverage Summary:**
+**Story A Class Coverage Summary:**
 ```
+<<<<<<< HEAD
 Story A Classes:
 ✅ ContactsSelector              %
 ✅ LoanApplicationsSelector      27%  
@@ -128,22 +92,19 @@ Story B Classes:
 
 Supporting Classes:
 ✅ Application                   100%
+=======
+ContactsSelector              100% ✅ (improved from 36%)
+LoanApplicationsSelector      100% ✅ (improved from 27%)
+LoanApplications             100% ✅
+LoanApplicationsTriggerHandler 88% ✅
+Contacts                      75% ✅
+Products                      96% ✅
+ProductsSelector              80% ✅
+Application                  100% ✅
+>>>>>>> 22fa524 (docs: Update README with improved test coverage results and streamlined structure)
 ```
 
-<img width="523" height="173" alt="image" src="https://github.com/user-attachments/assets/9cca7755-06be-4086-b491-c02bcf006f29" />
-
-### Test Coverage
-- **Selector Tests**: `LoanApplicationsSelectorTest`, `ContactsSelectorTest` - Data access layer validation
-- **Domain Tests**: `LoanApplicationsTest`, `ProductsTest` - Business logic validation  
-- **Trigger Tests**: `LoanApplicationsTriggerHandlerTest` - End-to-end trigger workflow testing
-
-#### Story B: Product Rate Normalization Tests
-- **Domain Tests**: `ProductsTest` - Rate normalization business logic validation
-- **Service Tests**: `ProductRateNormalizationServiceTest` - Service orchestration and bulk processing
-- **Batch Tests**: `ProductRateNormalizationBatchTest` - Asynchronous batch job execution 
-- **Scheduler Tests**: `ProductRateNormalizationSchedulerTest` - Scheduled job management and automation
-
-### Design Notes & Trade-offs
+### Design Notes & Trade-offs - Story A
 
 **Architecture Decisions:**
 - **Domain Layer**: `LoanApplications` — validation, approval, rejection rules  
@@ -160,12 +121,10 @@ Supporting Classes:
   - **Service**: Implements interfaces, registered in `Application.Service` factory 
   - **Selector**: Extends `fflib_SObjectSelector`, implements interfaces, registered in `Application.Selector` factory
   - **Unit of Work**: Proper usage throughout with `Application.UnitOfWork.newInstance()`
-- **Testing**: ✅ **Comprehensive Coverage** - 18 test classes covering all layers (Domain, Selector, Service, TriggerHandler, Batch, Scheduler) with both unit and integration scenarios
-- **Trigger Logic**: ✅ **FFLib Pattern Implemented** - Uses `LoanApplicationsTriggerHandler` extending `fflib_SObjectDomain` for trigger event handling, registered in Application factory, following fflib trigger pattern correctly 
+- **Testing**: ✅ **Comprehensive Coverage** - Complete test coverage for all layers with both unit and integration scenarios
+- **Trigger Logic**: ✅ **FFLib Pattern Implemented** - Uses `LoanApplicationsTriggerHandler` extending `fflib_SObjectDomain` for trigger event handling, registered in Application factory
 
-### Manual Testing Workflows
-
-## Story A: Loan Application Manual Testing
+### Manual Testing Scripts - Story A
 
 #### 1. Create Test Data
 ```apex
@@ -217,16 +176,36 @@ System.debug('Tasks created: ' + tasks.size());
 
 ## Story B: Product Rate Normalization
 
-## Testing Demo
-
 **[▶️ Watch Story B Demo](https://www.loom.com/share/1f39f40e4990498095600afbb7f6cc13?sid=a83a5302-fc4d-48dd-ac56-3d9053f91068)**
 
 ### Process Flow
 ```
-Background Process → Query Out-of-Range Products → Apply Normalization Rules → Bulk Update → Complete
+Scheduler (Nightly 2 AM) → Check Products Needing Normalization → Execute Batch Job → Normalize Rates → Update Products
 ```
 
-### How to Run Tests
+### Business Rules
+- **Minimum Rate**: 0.5% (Products below this are normalized to 0.5%)
+- **Maximum Rate**: 15% (Products above this are normalized to 15%)
+- **Bulk Processing**: Handles large datasets with configurable batch sizes
+- **Scheduled Execution**: Runs nightly at 2 AM by default
+
+### Architecture Components
+
+#### Service Layer
+- **`ProductRateNormalizationService.cls`** - Orchestrates synchronous rate normalization
+- Static methods for on-demand processing and count queries
+
+#### Batch Processing
+- **`ProductRateNormalizationBatch.cls`** - Implements Database.Batchable for async bulk processing
+- **`ProductRateNormalizationScheduler.cls`** - Implements Schedulable for nightly automation
+
+#### Enhanced Domain & Selector Layers
+- **`Products.cls`** - Enhanced with rate normalization business logic
+- **`IProducts.cls`** - Extended interface for normalization operations
+- **`ProductsSelector.cls`** - Enhanced with rate normalization queries
+- **`IProductsSelector.cls`** - Extended interface for normalization selectors
+
+### How to Run Story B Tests
 
 ```bash
 # Run all Story B tests
@@ -237,7 +216,23 @@ sf apex test run \
   --wait 10
 ```
 
-**Design Notes & Trade-offs**
+### Test Results - Story B
+
+**Latest Test Execution Results:**
+- **Total Tests**: Story B comprehensive coverage
+- **Pass Rate**: 96% (batch testing limitations in Salesforce)
+- **Test Run Time**: Efficient execution
+
+**Story B Class Coverage Summary:**
+```
+ProductRateNormalizationService    100% ✅
+ProductRateNormalizationScheduler  100% ✅
+ProductRateNormalizationBatch       82% ✅
+ProductsSelector                    80% ✅
+Products                            96% ✅
+```
+
+### Design Notes & Trade-offs - Story B
 
 **Architecture Decisions:**
 * **Domain Layer**: `Products` — rate normalization business logic (0.5% - 15% bounds)
@@ -249,10 +244,10 @@ sf apex test run \
 * **Batch Strategy**: ✅ **Implemented** - Chose Batchable over Queueable for large dataset processing with configurable batch sizes. Includes both synchronous service calls and asynchronous batch processing options
 * **Error Handling**: Basic batch error handling implemented with debug logging. Production would benefit from more sophisticated logging, retry mechanisms, and error notification systems
 * **Constants Management**: ✅ **Properly Structured** - Rate bounds defined as constants in `Products` domain class (MIN_RATE, MAX_RATE), following domain-driven design. Production could move to Custom Metadata for business user configuration
-* **Testing**: ✅ **Comprehensive Implementation** - Full test coverage including service tests, batch tests, scheduler tests, and domain tests with multiple scenarios (below/above bounds, bulk processing, error conditions)
+* **Testing**: ✅ **Comprehensive Implementation** - Full test coverage including service tests, batch tests, scheduler tests, and domain tests with multiple scenarios
 * **Scheduler Integration**: ✅ **Production-Ready** - Complete scheduler implementation with setup/teardown utilities, configurable cron expressions, job monitoring, and management capabilities
 
-### Manual Testing Scripts
+### Manual Testing Scripts - Story B
 
 #### 1. Reset Script (Run First)
 ```apex
@@ -304,38 +299,7 @@ for(Product__c p : afterService) {
 }
 ```
 
-#### 4. Reset for Batch Test
-```apex
-// RESET FOR BATCH TEST
-System.debug('=== RESETTING FOR BATCH TEST ===');
-List<Product__c> productsToReset = [SELECT Id, Name FROM Product__c];
-for(Product__c p : productsToReset) {
-    if(p.Name == 'Too Low Rate') {
-        p.Base_Rate__c = 0.001;
-    } else if(p.Name == 'Way Too Low') {
-        p.Base_Rate__c = 0.0001;
-    } else if(p.Name == 'Too High Rate') {
-        p.Base_Rate__c = 0.18;
-    } else if(p.Name == 'Way Too High') {
-        p.Base_Rate__c = 0.25;
-    } else if(p.Name == 'Just Right Low') {
-        p.Base_Rate__c = 0.005;
-    } else if(p.Name == 'Just Right High') {
-        p.Base_Rate__c = 0.15;
-    } else if(p.Name == 'Normal Rate') {
-        p.Base_Rate__c = 0.06;
-    }
-}
-update productsToReset;
-
-System.debug('Data reset for batch test:');
-List<Product__c> beforeBatch = [SELECT Name, Base_Rate__c FROM Product__c ORDER BY Base_Rate__c];
-for(Product__c p : beforeBatch) {
-    System.debug(p.Name + ': ' + (p.Base_Rate__c * 100) + '%');
-}
-```
-
-#### 5. Execute Batch Job (Asynchronous)
+#### 4. Execute Batch Job (Asynchronous)
 ```apex
 // EXECUTE BATCH JOB
 System.debug('=== EXECUTING BATCH JOB ===');
@@ -343,44 +307,9 @@ ProductRateNormalizationBatch batch = new ProductRateNormalizationBatch();
 Id batchId = Database.executeBatch(batch, 200);
 System.debug('Batch Job ID: ' + batchId);
 System.debug('Check Setup > Apex Jobs for completion status');
-System.debug('Run verification script after batch completes');
 ```
 
-#### 6. Verify Batch Results (Run After Batch Completes)
-```apex
-// VERIFY BATCH RESULTS - Run after batch job completes
-System.debug('=== FINAL VERIFICATION - BATCH RESULTS ===');
-List<Product__c> finalResults = [SELECT Name, Base_Rate__c FROM Product__c ORDER BY Base_Rate__c];
-
-Integer normalizedToLower = 0;
-Integer normalizedToUpper = 0;
-Integer unchanged = 0;
-
-for(Product__c p : finalResults) {
-    String status = '';
-    if(p.Base_Rate__c == 0.005) {
-        status = ' (normalized to lower bound 0.5%)';
-        normalizedToLower++;
-    } else if(p.Base_Rate__c == 0.15) {
-        status = ' (normalized to upper bound 15%)';
-        normalizedToUpper++;
-    } else {
-        status = ' (unchanged - within range)';
-        unchanged++;
-    }
-    
-    System.debug(p.Name + ': ' + (p.Base_Rate__c * 100) + '%' + status);
-}
-
-System.debug('');
-System.debug('=== SUMMARY ===');
-System.debug('Records normalized to lower bound: ' + normalizedToLower);
-System.debug('Records normalized to upper bound: ' + normalizedToUpper);
-System.debug('Records unchanged: ' + unchanged);
-System.debug('Total records processed: ' + finalResults.size());
-```
-
-#### 7. Test Scheduler Functionality
+#### 5. Test Scheduler Functionality
 ```apex
 // SETUP AND TEST SCHEDULER
 System.debug('=== SCHEDULER TESTING ===');
@@ -395,92 +324,6 @@ for(CronTrigger job : jobs) {
     System.debug('Scheduled Job: ' + job.CronJobDetail.Name);
     System.debug('Cron Expression: ' + job.CronExpression);
     System.debug('Next Run Time: ' + job.NextFireTime);
-    System.debug('Current State: ' + job.State);
-}
-
-// Test immediate execution (simulate scheduler trigger)
-System.debug('=== TESTING IMMEDIATE SCHEDULER EXECUTION ===');
-ProductRateNormalizationScheduler scheduler = new ProductRateNormalizationScheduler();
-scheduler.execute(null); // Simulate scheduled execution
-
-// Check if batch was triggered
-List<AsyncApexJob> batchJobs = [
-    SELECT Id, Status, JobType, ApexClass.Name, CreatedDate
-    FROM AsyncApexJob 
-    WHERE JobType = 'BatchApex' 
-    AND ApexClass.Name = 'ProductRateNormalizationBatch'
-    ORDER BY CreatedDate DESC
-    LIMIT 5
-];
-
-System.debug('Recent Batch Jobs:');
-for(AsyncApexJob job : batchJobs) {
-    System.debug('Job ID: ' + job.Id + ' | Status: ' + job.Status + ' | Created: ' + job.CreatedDate);
-}
-
-// Schedule a custom test run (5 minutes from now)
-Datetime testTime = Datetime.now().addMinutes(5);
-String testCron = '0 ' + testTime.minute() + ' ' + testTime.hour() + ' ' + testTime.day() + ' ' + testTime.month() + ' ? ' + testTime.year();
-Id testJobId = ProductRateNormalizationScheduler.scheduleNightly('Test Rate Normalization - 5min', testCron, 50);
-System.debug('Test job scheduled for 5 minutes from now with ID: ' + testJobId);
-
-// To cancel scheduled jobs when testing is complete:
-// ProductRateNormalizationScheduler.cancelScheduledJob('Product Rate Normalization - Nightly');
-// ProductRateNormalizationScheduler.cancelScheduledJob('Test Rate Normalization - 5min');
-```
-
-#### 8. Monitor Scheduled Job Execution
-```apex
-// MONITOR SCHEDULER AND BATCH EXECUTION
-System.debug('=== MONITORING SCHEDULED JOBS ===');
-
-// Check all scheduled jobs
-List<CronTrigger> allJobs = [
-    SELECT Id, CronJobDetail.Name, CronExpression, NextFireTime, State, PreviousFireTime
-    FROM CronTrigger 
-    WHERE CronJobDetail.Name LIKE '%Rate Normalization%'
-];
-
-for(CronTrigger job : allJobs) {
-    System.debug('=== JOB: ' + job.CronJobDetail.Name + ' ===');
-    System.debug('State: ' + job.State);
-    System.debug('Next Fire: ' + job.NextFireTime);
-    System.debug('Previous Fire: ' + job.PreviousFireTime);
-    System.debug('Cron: ' + job.CronExpression);
-}
-
-// Check recent batch executions
-List<AsyncApexJob> recentBatches = [
-    SELECT Id, Status, JobType, ApexClass.Name, CreatedDate, CompletedDate, 
-           TotalJobItems, JobItemsProcessed, NumberOfErrors
-    FROM AsyncApexJob 
-    WHERE JobType = 'BatchApex' 
-    AND ApexClass.Name = 'ProductRateNormalizationBatch'
-    AND CreatedDate = TODAY
-    ORDER BY CreatedDate DESC
-];
-
-System.debug('=== TODAY\'S BATCH EXECUTIONS ===');
-for(AsyncApexJob batch : recentBatches) {
-    System.debug('Batch ID: ' + batch.Id);
-    System.debug('Status: ' + batch.Status);
-    System.debug('Created: ' + batch.CreatedDate);
-    System.debug('Completed: ' + batch.CompletedDate);
-    System.debug('Items Processed: ' + batch.JobItemsProcessed + '/' + batch.TotalJobItems);
-    System.debug('Errors: ' + batch.NumberOfErrors);
-    System.debug('---');
-}
-
-// Show current product rates status
-List<Product__c> currentProducts = [SELECT Name, Base_Rate__c FROM Product__c ORDER BY Base_Rate__c];
-System.debug('=== CURRENT PRODUCT RATES ===');
-for(Product__c p : currentProducts) {
-    String status = 'NORMAL';
-    if(p.Base_Rate__c != null) {
-        if(p.Base_Rate__c < 0.005) status = 'TOO LOW';
-        else if(p.Base_Rate__c > 0.15) status = 'TOO HIGH';
-    }
-    System.debug(p.Name + ': ' + (p.Base_Rate__c != null ? (p.Base_Rate__c * 100) + '%' : 'NULL') + ' (' + status + ')');
 }
 ```
 
@@ -533,16 +376,9 @@ This project demonstrates key fflib patterns:
 This implementation is built using the **Apex Enterprise Patterns** (fflib) framework:
 
 ### Core Libraries
-- **[fflib-apex-common](https://github.com/apex-enterprise-patterns/fflib-apex-common)** - Common Apex Library supporting Apex Enterprise Patterns and much more! This foundational library provides the base classes and patterns for Domain, Selector, Service, and Unit of Work layers.
+- **[fflib-apex-common](https://github.com/apex-enterprise-patterns/fflib-apex-common)** - Common Apex Library supporting Apex Enterprise Patterns and much more!
 
-- **[fflib-apex-common-samplecode](https://github.com/apex-enterprise-patterns/fflib-apex-common-samplecode)** - Sample application illustrating the Apex Enterprise Patterns library. This repository was instrumental for quick installation and setup into the development org, providing working examples of fflib implementation patterns.
-
-### Documentation & Learning Resources
-The fflib framework includes comprehensive documentation covering:
-- **Domain Layer**: Business logic encapsulation and trigger handling
-- **Selector Layer**: SOQL query abstraction and data access patterns  
-- **Service Layer**: Business process orchestration and transaction management
-- **Unit of Work**: Bulkified DML operations and transaction integrity
+- **[fflib-apex-common-samplecode](https://github.com/apex-enterprise-patterns/fflib-apex-common-samplecode)** - Sample application illustrating the Apex Enterprise Patterns library.
 
 ### Framework Benefits
 - **Governor Limit Management**: Efficient resource utilization through bulkification
