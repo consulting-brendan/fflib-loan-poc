@@ -1,21 +1,24 @@
 /**
- * @description Domain class for Product__c implementing business logic for product selection and rating
+ * @description Domain class for Product__c implementing business logic for product selection and rate normalization
  * @author Brendan Milton
  * @date 2025
  * @company Lendi (Interview Project)
  * @group Loan Applications
  * 
  * @learnings
- * • Domain class focused on single responsibility: product selection logic based on credit scores
- * • Implements business rule: find best (lowest rate) product that borrower qualifies for based on credit
- * • Uses domain-driven design with meaningful method names like selectBestProductForCreditScore()
- * • Encapsulates complex comparison logic while exposing simple interface to calling domain classes
- * • Demonstrates cross-domain collaboration: called by LoanApplications domain for product decisions
+ * • Domain class with dual responsibility: product selection logic and rate normalization business rules
+ * • Implements business rules: product selection based on credit scores and rate boundary enforcement
+ * • Uses domain-driven design with meaningful method names like selectBestProductForCreditScore() and normalizeRates()
+ * • Encapsulates rate normalization logic: MIN_RATE (0.5%) and MAX_RATE (15%) boundary enforcement
+ * • Demonstrates bulk-safe operations with governor limit awareness in rate normalization processing
+ * • Cross-domain collaboration: called by LoanApplications for selection, services for rate normalization
  **/
 
 public with sharing class Products extends fflib_SObjects
 	implements IProducts
 {
+	public static final Decimal MIN_RATE = 0.005; // 0.5%
+	public static final Decimal MAX_RATE = 0.15;  // 15%
 	public static IProducts newInstance(List<Product__c> recordList)
 	{
 		return (IProducts) Application.Domain.newInstance(recordList);
@@ -61,6 +64,56 @@ public with sharing class Products extends fflib_SObjects
 		}
 
 		return bestProduct;
+	}
+
+	public void normalizeRates()
+	{
+		Integer recordsProcessed = 0;
+		
+		for (Product__c product : getProducts())
+		{
+			if (product.Base_Rate__c != null)
+			{
+				Decimal originalRate = product.Base_Rate__c;
+				
+				if (product.Base_Rate__c < MIN_RATE)
+				{
+					product.Base_Rate__c = MIN_RATE;
+					recordsProcessed++;
+				}
+				else if (product.Base_Rate__c > MAX_RATE)
+				{
+					product.Base_Rate__c = MAX_RATE;
+					recordsProcessed++;
+				}
+			}
+		}
+	}
+
+	public void normalizeRates(fflib_ISObjectUnitOfWork uow)
+	{
+		normalizeRates();
+		
+		for (Product__c product : getProducts())
+		{
+			uow.registerDirty(product);
+		}
+	}
+
+	public Integer countProductsNeedingNormalization()
+	{
+		Integer count = 0;
+		
+		for (Product__c product : getProducts())
+		{
+			if (product.Base_Rate__c != null && 
+				(product.Base_Rate__c < MIN_RATE || product.Base_Rate__c > MAX_RATE))
+			{
+				count++;
+			}
+		}
+		
+		return count;
 	}
 
 	public class Constructor implements fflib_IDomainConstructor

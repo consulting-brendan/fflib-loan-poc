@@ -70,4 +70,27 @@ public class ProductsSelector extends fflib_SObjectSelector
 				.setCondition('Min_Credit_Score__c <= :minCreditScore')
 				.toSOQL());
 	}
+
+	public List<Product__c> selectProductsNeedingRateNormalization()
+	{
+		Decimal minRate = Products.MIN_RATE;
+		Decimal maxRate = Products.MAX_RATE;
+		
+		return (List<Product__c>) Database.query(
+			newQueryFactory()
+				.assertIsAccessible()
+				.setEnforceFLS(true)
+				.setCondition('Base_Rate__c != null AND (Base_Rate__c < :minRate OR Base_Rate__c > :maxRate)')
+				.toSOQL());
+	}
+
+	public Integer countProductsNeedingRateNormalization()
+	{
+		Decimal minRate = Products.MIN_RATE;
+		Decimal maxRate = Products.MAX_RATE;
+		
+		return Database.countQuery(
+			'SELECT COUNT() FROM Product__c WHERE Base_Rate__c != null AND (Base_Rate__c < :minRate OR Base_Rate__c > :maxRate) WITH SECURITY_ENFORCED'
+		);
+	}
 }
