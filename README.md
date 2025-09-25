@@ -20,32 +20,32 @@ Broker → Create Contact → Create Product → Create Loan Application → Upd
 ### Architecture Components
 
 #### Triggers
-- **`LoanApplications.trigger`** - Main trigger delegating to domain handler
+- **[`LoanApplications.trigger`](https://github.com/consulting-brendan/fflib-loan-poc/blob/main/sfdx-source/apex-common-samplecode/main/triggers/LoanApplications.trigger)** - Main trigger delegating to domain handler
 
 #### Trigger Handlers  
-- **`LoanApplicationsTriggerHandler.cls`** - Extends fflib_SObjectDomain, handles trigger events
+- **[`LoanApplicationsTriggerHandler.cls`](https://github.com/consulting-brendan/fflib-loan-poc/blob/main/sfdx-source/apex-common-samplecode/main/classes/triggerHandlers/LoanApplicationsTriggerHandler.cls)** - Extends fflib_SObjectDomain, handles trigger events
 
 #### Domain Layer
-- **`LoanApplications.cls`** - Core business logic for loan processing, validation, and approval
-- **`ILoanApplications.cls`** - Interface defining loan application domain contract
-- **`Products.cls`** - Product selection logic based on credit scores
-- **`IProducts.cls`** - Interface defining product domain contract
+- **[`LoanApplications.cls`](https://github.com/consulting-brendan/fflib-loan-poc/blob/main/sfdx-source/apex-common-samplecode/main/classes/domains/LoanApplications.cls)** - Core business logic for loan processing, validation, and approval
+- **[`ILoanApplications.cls`](https://github.com/consulting-brendan/fflib-loan-poc/blob/main/sfdx-source/apex-common-samplecode/main/classes/domains/ILoanApplications.cls)** - Interface defining loan application domain contract
+- **[`Products.cls`](https://github.com/consulting-brendan/fflib-loan-poc/blob/main/sfdx-source/apex-common-samplecode/main/classes/domains/Products.cls)** - Product selection logic based on credit scores
+- **[`IProducts.cls`](https://github.com/consulting-brendan/fflib-loan-poc/blob/main/sfdx-source/apex-common-samplecode/main/classes/domains/IProducts.cls)** - Interface defining product domain contract
 
 #### Selector Layer
-- **`LoanApplicationsSelector.cls`** - Data access for Loan_Application__c records
-- **`ILoanApplicationsSelector.cls`** - Interface for loan application queries
-- **`ContactsSelector.cls`** - Data access for Contact records (borrowers)
-- **`IContactsSelector.cls`** - Interface for contact queries
-- **`ProductsSelector.cls`** - Data access for Product__c records
-- **`IProductsSelector.cls`** - Interface for product queries
+- **[`LoanApplicationsSelector.cls`](https://github.com/consulting-brendan/fflib-loan-poc/blob/main/sfdx-source/apex-common-samplecode/main/classes/selectors/LoanApplicationsSelector.cls)** - Data access for Loan_Application__c records
+- **[`ILoanApplicationsSelector.cls`](https://github.com/consulting-brendan/fflib-loan-poc/blob/main/sfdx-source/apex-common-samplecode/main/classes/selectors/ILoanApplicationsSelector.cls)** - Interface for loan application queries
+- **[`ContactsSelector.cls`](https://github.com/consulting-brendan/fflib-loan-poc/blob/main/sfdx-source/apex-common-samplecode/main/classes/selectors/ContactsSelector.cls)** - Data access for Contact records (borrowers)
+- **[`IContactsSelector.cls`](https://github.com/consulting-brendan/fflib-loan-poc/blob/main/sfdx-source/apex-common-samplecode/main/classes/selectors/IContactsSelector.cls)** - Interface for contact queries
+- **[`ProductsSelector.cls`](https://github.com/consulting-brendan/fflib-loan-poc/blob/main/sfdx-source/apex-common-samplecode/main/classes/selectors/ProductsSelector.cls)** - Data access for Product__c records
+- **[`IProductsSelector.cls`](https://github.com/consulting-brendan/fflib-loan-poc/blob/main/sfdx-source/apex-common-samplecode/main/classes/selectors/IProductsSelector.cls)** - Interface for product queries
 
 #### Service Layer
-- **`LoanApplicationServiceImpl.cls`** - Service implementation orchestrating loan processing
-- **`ILoanApplicationService.cls`** - Interface defining service contract
+- **[`LoanApplicationServiceImpl.cls`](https://github.com/consulting-brendan/fflib-loan-poc/blob/main/sfdx-source/apex-common-samplecode/main/classes/service/LoanApplicationServiceImpl.cls)** - Service implementation orchestrating loan processing
+- **[`ILoanApplicationService.cls`](https://github.com/consulting-brendan/fflib-loan-poc/blob/main/sfdx-source/apex-common-samplecode/main/classes/service/ILoanApplicationService.cls)** - Interface defining service contract
 
 #### Supporting Domain Classes
-- **`Contacts.cls`** - Contact domain logic for activity updates
-- **`IContacts.cls`** - Interface for contact domain operations
+- **[`Contacts.cls`](https://github.com/consulting-brendan/fflib-loan-poc/blob/main/sfdx-source/apex-common-samplecode/main/classes/domains/Contacts.cls)** - Contact domain logic for activity updates
+- **[`IContacts.cls`](https://github.com/consulting-brendan/fflib-loan-poc/blob/main/sfdx-source/apex-common-samplecode/main/classes/domains/IContacts.cls)** - Interface for contact domain operations
 
 ### How to Run Story A Tests
 
@@ -68,31 +68,13 @@ sf apex test run \
 ### Test Results - Story A
 
 **Latest Test Execution Results:**
-- **ContactsSelectorTest**: 12 tests executed, 100% pass rate
-- **LoanApplicationsSelectorTest**: 13 tests executed, 100% pass rate
+- **[ContactsSelectorTest](https://github.com/consulting-brendan/fflib-loan-poc/blob/main/sfdx-source/apex-common-samplecode/test/classes/selectors/ContactsSelectorTest.cls)**: 12 tests executed, 100% pass rate
+- **[LoanApplicationsSelectorTest](https://github.com/consulting-brendan/fflib-loan-poc/blob/main/sfdx-source/apex-common-samplecode/test/classes/selectors/LoanApplicationsSelectorTest.cls)**: 13 tests executed, 100% pass rate
 - **Total Tests**: 25 selector tests (up from 8)
 - **Test Execution Time**: 2.68 seconds
 
 **Story A Class Coverage Summary:**
 ```
-<<<<<<< HEAD
-Story A Classes:
-✅ ContactsSelector              %
-✅ LoanApplicationsSelector      27%  
-✅ LoanApplications             100%
-✅ LoanApplicationsTriggerHandler 88%
-✅ Contacts                      75%
-✅ Products                      96%
-✅ ProductsSelector              80%
-
-Story B Classes:
-✅ ProductRateNormalizationService    100%
-✅ ProductRateNormalizationScheduler  100%
-✅ ProductRateNormalizationBatch       82%
-
-Supporting Classes:
-✅ Application                   100%
-=======
 ContactsSelector              100% ✅ (improved from 36%)
 LoanApplicationsSelector      100% ✅ (improved from 27%)
 LoanApplications             100% ✅
@@ -101,28 +83,27 @@ Contacts                      75% ✅
 Products                      96% ✅
 ProductsSelector              80% ✅
 Application                  100% ✅
->>>>>>> 22fa524 (docs: Update README with improved test coverage results and streamlined structure)
 ```
 
 ### Design Notes & Trade-offs - Story A
 
 **Architecture Decisions:**
-- **Domain Layer**: `LoanApplications` — validation, approval, rejection rules  
-- **Service Layer**: `LoanApplicationServiceImpl` — orchestrates selectors, domain decisions, and DML  
-- **Selector Layer**: `ContactsSelector`, `ProductsSelector`, `LoanApplicationsSelector` — data access  
+- **Domain Layer**: [`LoanApplications`](https://github.com/consulting-brendan/fflib-loan-poc/blob/main/sfdx-source/apex-common-samplecode/main/classes/domains/LoanApplications.cls) — validation, approval, rejection rules  
+- **Service Layer**: [`LoanApplicationServiceImpl`](https://github.com/consulting-brendan/fflib-loan-poc/blob/main/sfdx-source/apex-common-samplecode/main/classes/service/LoanApplicationServiceImpl.cls) — orchestrates selectors, domain decisions, and DML  
+- **Selector Layer**: [`ContactsSelector`](https://github.com/consulting-brendan/fflib-loan-poc/blob/main/sfdx-source/apex-common-samplecode/main/classes/selectors/ContactsSelector.cls), [`ProductsSelector`](https://github.com/consulting-brendan/fflib-loan-poc/blob/main/sfdx-source/apex-common-samplecode/main/classes/selectors/ProductsSelector.cls), [`LoanApplicationsSelector`](https://github.com/consulting-brendan/fflib-loan-poc/blob/main/sfdx-source/apex-common-samplecode/main/classes/selectors/LoanApplicationsSelector.cls) — data access  
 - **Trigger**: Thin trigger delegates work to service layer 
 
 **Design Trade-offs:**
 - **Data Model**: Used standard Contact instead of Borrower, with custom objects Loan_Application__c and Product__c. Broker is assumed to be the current user. In a production solution, would consider using Web-to-Lead, Lead (Draft)→Opportunity (Submitted, Approved, Rejected), separate Contacts for borrower and broker, and Product2
-- **Validation Strategy**: ✅ **Implemented** - FFLib best practices applied with domain-layer validation in `LoanApplicationsTriggerHandler.onValidate()` and business rule validation in `LoanApplications.submitApplications()`
+- **Validation Strategy**: ✅ **Implemented** - FFLib best practices applied with domain-layer validation in [`LoanApplicationsTriggerHandler.onValidate()`](https://github.com/consulting-brendan/fflib-loan-poc/blob/main/sfdx-source/apex-common-samplecode/main/classes/triggerHandlers/LoanApplicationsTriggerHandler.cls) and business rule validation in [`LoanApplications.submitApplications()`](https://github.com/consulting-brendan/fflib-loan-poc/blob/main/sfdx-source/apex-common-samplecode/main/classes/domains/LoanApplications.cls)
 - **Task Assignment**: Created tasks for "broker" role generically. Production implementation would benefit from Custom Metadata setup for task assignment to various teams based on application type/stage
 - **FFLib Implementation**: ✅ **Successfully Implemented** - All layers follow fflib patterns:
-  - **Domain**: Extends `fflib_SObjects`, implements interfaces, registered in `Application.Domain` factory
-  - **Service**: Implements interfaces, registered in `Application.Service` factory 
-  - **Selector**: Extends `fflib_SObjectSelector`, implements interfaces, registered in `Application.Selector` factory
+  - **Domain**: Extends `fflib_SObjects`, implements interfaces, registered in [`Application.Domain`](https://github.com/consulting-brendan/fflib-loan-poc/blob/main/sfdx-source/apex-common-samplecode/main/classes/Application.cls) factory
+  - **Service**: Implements interfaces, registered in [`Application.Service`](https://github.com/consulting-brendan/fflib-loan-poc/blob/main/sfdx-source/apex-common-samplecode/main/classes/Application.cls) factory 
+  - **Selector**: Extends `fflib_SObjectSelector`, implements interfaces, registered in [`Application.Selector`](https://github.com/consulting-brendan/fflib-loan-poc/blob/main/sfdx-source/apex-common-samplecode/main/classes/Application.cls) factory
   - **Unit of Work**: Proper usage throughout with `Application.UnitOfWork.newInstance()`
 - **Testing**: ✅ **Comprehensive Coverage** - Complete test coverage for all layers with both unit and integration scenarios
-- **Trigger Logic**: ✅ **FFLib Pattern Implemented** - Uses `LoanApplicationsTriggerHandler` extending `fflib_SObjectDomain` for trigger event handling, registered in Application factory
+- **Trigger Logic**: ✅ **FFLib Pattern Implemented** - Uses [`LoanApplicationsTriggerHandler`](https://github.com/consulting-brendan/fflib-loan-poc/blob/main/sfdx-source/apex-common-samplecode/main/classes/triggerHandlers/LoanApplicationsTriggerHandler.cls) extending `fflib_SObjectDomain` for trigger event handling, registered in Application factory
 
 ### Manual Testing Scripts - Story A
 
@@ -192,18 +173,18 @@ Scheduler (Nightly 2 AM) → Check Products Needing Normalization → Execute Ba
 ### Architecture Components
 
 #### Service Layer
-- **`ProductRateNormalizationService.cls`** - Orchestrates synchronous rate normalization
+- **[`ProductRateNormalizationService.cls`](https://github.com/consulting-brendan/fflib-loan-poc/blob/main/sfdx-source/apex-common-samplecode/main/classes/service/ProductRateNormalizationService.cls)** - Orchestrates synchronous rate normalization
 - Static methods for on-demand processing and count queries
 
 #### Batch Processing
-- **`ProductRateNormalizationBatch.cls`** - Implements Database.Batchable for async bulk processing
-- **`ProductRateNormalizationScheduler.cls`** - Implements Schedulable for nightly automation
+- **[`ProductRateNormalizationBatch.cls`](https://github.com/consulting-brendan/fflib-loan-poc/blob/main/sfdx-source/apex-common-samplecode/main/classes/batchjobs/ProductRateNormalizationBatch.cls)** - Implements Database.Batchable for async bulk processing
+- **[`ProductRateNormalizationScheduler.cls`](https://github.com/consulting-brendan/fflib-loan-poc/blob/main/sfdx-source/apex-common-samplecode/main/classes/batchjobs/ProductRateNormalizationScheduler.cls)** - Implements Schedulable for nightly automation
 
 #### Enhanced Domain & Selector Layers
-- **`Products.cls`** - Enhanced with rate normalization business logic
-- **`IProducts.cls`** - Extended interface for normalization operations
-- **`ProductsSelector.cls`** - Enhanced with rate normalization queries
-- **`IProductsSelector.cls`** - Extended interface for normalization selectors
+- **[`Products.cls`](https://github.com/consulting-brendan/fflib-loan-poc/blob/main/sfdx-source/apex-common-samplecode/main/classes/domains/Products.cls)** - Enhanced with rate normalization business logic
+- **[`IProducts.cls`](https://github.com/consulting-brendan/fflib-loan-poc/blob/main/sfdx-source/apex-common-samplecode/main/classes/domains/IProducts.cls)** - Extended interface for normalization operations
+- **[`ProductsSelector.cls`](https://github.com/consulting-brendan/fflib-loan-poc/blob/main/sfdx-source/apex-common-samplecode/main/classes/selectors/ProductsSelector.cls)** - Enhanced with rate normalization queries
+- **[`IProductsSelector.cls`](https://github.com/consulting-brendan/fflib-loan-poc/blob/main/sfdx-source/apex-common-samplecode/main/classes/selectors/IProductsSelector.cls)** - Extended interface for normalization selectors
 
 ### How to Run Story B Tests
 
@@ -219,6 +200,9 @@ sf apex test run \
 ### Test Results - Story B
 
 **Latest Test Execution Results:**
+- **[ProductRateNormalizationServiceTest](https://github.com/consulting-brendan/fflib-loan-poc/blob/main/sfdx-source/apex-common-samplecode/test/classes/service/ProductRateNormalizationServiceTest.cls)**: Comprehensive service layer coverage
+- **[ProductRateNormalizationBatchTest](https://github.com/consulting-brendan/fflib-loan-poc/blob/main/sfdx-source/apex-common-samplecode/test/classes/batchjobs/ProductRateNormalizationBatchTest.cls)**: Async batch processing validation
+- **[ProductRateNormalizationSchedulerTest](https://github.com/consulting-brendan/fflib-loan-poc/blob/main/sfdx-source/apex-common-samplecode/test/classes/batchjobs/ProductRateNormalizationSchedulerTest.cls)**: Scheduler functionality testing
 - **Total Tests**: Story B comprehensive coverage
 - **Pass Rate**: 96% (batch testing limitations in Salesforce)
 - **Test Run Time**: Efficient execution
@@ -235,15 +219,15 @@ Products                            96% ✅
 ### Design Notes & Trade-offs - Story B
 
 **Architecture Decisions:**
-* **Domain Layer**: `Products` — rate normalization business logic (0.5% - 15% bounds)
-* **Service Layer**: `ProductRateNormalizationService` — orchestrates normalization process with constants
-* **Selector Layer**: `ProductsSelector` — efficient querying of products needing normalization
-* **Async Layer**: `ProductRateNormalizationBatch` — batchable implementation for background processing
+* **Domain Layer**: [`Products`](https://github.com/consulting-brendan/fflib-loan-poc/blob/main/sfdx-source/apex-common-samplecode/main/classes/domains/Products.cls) — rate normalization business logic (0.5% - 15% bounds)
+* **Service Layer**: [`ProductRateNormalizationService`](https://github.com/consulting-brendan/fflib-loan-poc/blob/main/sfdx-source/apex-common-samplecode/main/classes/service/ProductRateNormalizationService.cls) — orchestrates normalization process with constants
+* **Selector Layer**: [`ProductsSelector`](https://github.com/consulting-brendan/fflib-loan-poc/blob/main/sfdx-source/apex-common-samplecode/main/classes/selectors/ProductsSelector.cls) — efficient querying of products needing normalization
+* **Async Layer**: [`ProductRateNormalizationBatch`](https://github.com/consulting-brendan/fflib-loan-poc/blob/main/sfdx-source/apex-common-samplecode/main/classes/batchjobs/ProductRateNormalizationBatch.cls) — batchable implementation for background processing
 
 **Design Trade-offs:**
 * **Batch Strategy**: ✅ **Implemented** - Chose Batchable over Queueable for large dataset processing with configurable batch sizes. Includes both synchronous service calls and asynchronous batch processing options
 * **Error Handling**: Basic batch error handling implemented with debug logging. Production would benefit from more sophisticated logging, retry mechanisms, and error notification systems
-* **Constants Management**: ✅ **Properly Structured** - Rate bounds defined as constants in `Products` domain class (MIN_RATE, MAX_RATE), following domain-driven design. Production could move to Custom Metadata for business user configuration
+* **Constants Management**: ✅ **Properly Structured** - Rate bounds defined as constants in [`Products`](https://github.com/consulting-brendan/fflib-loan-poc/blob/main/sfdx-source/apex-common-samplecode/main/classes/domains/Products.cls) domain class (MIN_RATE, MAX_RATE), following domain-driven design. Production could move to Custom Metadata for business user configuration
 * **Testing**: ✅ **Comprehensive Implementation** - Full test coverage including service tests, batch tests, scheduler tests, and domain tests with multiple scenarios
 * **Scheduler Integration**: ✅ **Production-Ready** - Complete scheduler implementation with setup/teardown utilities, configurable cron expressions, job monitoring, and management capabilities
 
