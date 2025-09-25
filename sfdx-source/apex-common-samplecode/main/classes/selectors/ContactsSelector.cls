@@ -61,7 +61,6 @@ public class ContactsSelector extends fflib_SObjectSelector
 		
 	public List<Contact> selectByAccount(List<Account> accounts)
 	{
-		// Contacts that belong to the specified accounts
 		Set<Id> accountIds = new Set<Id>();
 		for (Account acc : (List<Account>) accounts)
 		{
@@ -71,7 +70,6 @@ public class ContactsSelector extends fflib_SObjectSelector
 			}
 		}
 		
-		// If no accounts provided, return empty list
 		if (accountIds.isEmpty())
 		{
 			return new List<Contact>();
