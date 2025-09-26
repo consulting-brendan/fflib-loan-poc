@@ -75,8 +75,8 @@ sf apex test run \
 
 **Story A Class Coverage Summary:**
 ```
-ContactsSelector              100% ✅ (improved from 36%)
-LoanApplicationsSelector      100% ✅ (improved from 27%)
+ContactsSelector              100% ✅ 
+LoanApplicationsSelector      100% ✅ 
 LoanApplications             100% ✅
 LoanApplicationsTriggerHandler 88% ✅
 Contacts                      75% ✅
@@ -94,16 +94,16 @@ Application                  100% ✅
 - **Trigger**: Thin trigger delegates work to service layer 
 
 **Design Trade-offs:**
-- **Data Model**: Used standard Contact instead of Borrower, with custom objects Loan_Application__c and Product__c. Broker is assumed to be the current user. In a production solution, would consider using Web-to-Lead, Lead (Draft)→Opportunity (Submitted, Approved, Rejected), separate Contacts for borrower and broker, and Product2
-- **Validation Strategy**: ✅ **Implemented** - FFLib best practices applied with domain-layer validation in [`LoanApplicationsTriggerHandler.onValidate()`](https://github.com/consulting-brendan/fflib-loan-poc/blob/main/sfdx-source/apex-common-samplecode/main/classes/triggerHandlers/LoanApplicationsTriggerHandler.cls) and business rule validation in [`LoanApplications.submitApplications()`](https://github.com/consulting-brendan/fflib-loan-poc/blob/main/sfdx-source/apex-common-samplecode/main/classes/domains/LoanApplications.cls)
+- **Data Model**: Used standard Contact instead of Borrower__c, with custom objects Loan_Application__c and Product__c. Broker is assumed to be the current user. In a production solution, would consider using Web-to-Lead, Lead (Draft)→Opportunity (Submitted, Approved, Rejected), separate Contacts for borrower and broker, and Product2
+- **Validation Strategy**: **Implemented** - FFLib best practices applied with domain-layer validation in [`LoanApplicationsTriggerHandler.onValidate()`](https://github.com/consulting-brendan/fflib-loan-poc/blob/main/sfdx-source/apex-common-samplecode/main/classes/triggerHandlers/LoanApplicationsTriggerHandler.cls) and business rule validation in [`LoanApplications.submitApplications()`](https://github.com/consulting-brendan/fflib-loan-poc/blob/main/sfdx-source/apex-common-samplecode/main/classes/domains/LoanApplications.cls)
 - **Task Assignment**: Created tasks for "broker" role generically. Production implementation would benefit from Custom Metadata setup for task assignment to various teams based on application type/stage
-- **FFLib Implementation**: ✅ **Successfully Implemented** - All layers follow fflib patterns:
+- **FFLib Implementation**: **Successfully Implemented** - All layers follow fflib patterns:
   - **Domain**: Extends `fflib_SObjects`, implements interfaces, registered in [`Application.Domain`](https://github.com/consulting-brendan/fflib-loan-poc/blob/main/sfdx-source/apex-common-samplecode/main/classes/Application.cls) factory
   - **Service**: Implements interfaces, registered in [`Application.Service`](https://github.com/consulting-brendan/fflib-loan-poc/blob/main/sfdx-source/apex-common-samplecode/main/classes/Application.cls) factory 
   - **Selector**: Extends `fflib_SObjectSelector`, implements interfaces, registered in [`Application.Selector`](https://github.com/consulting-brendan/fflib-loan-poc/blob/main/sfdx-source/apex-common-samplecode/main/classes/Application.cls) factory
   - **Unit of Work**: Proper usage throughout with `Application.UnitOfWork.newInstance()`
-- **Testing**: ✅ **Comprehensive Coverage** - Complete test coverage for all layers with both unit and integration scenarios
-- **Trigger Logic**: ✅ **FFLib Pattern Implemented** - Uses [`LoanApplicationsTriggerHandler`](https://github.com/consulting-brendan/fflib-loan-poc/blob/main/sfdx-source/apex-common-samplecode/main/classes/triggerHandlers/LoanApplicationsTriggerHandler.cls) extending `fflib_SObjectDomain` for trigger event handling, registered in Application factory
+- **Testing**: **Comprehensive Coverage** - Complete test coverage for all layers with both unit and integration scenarios
+- **Trigger Logic**: **FFLib Pattern Implemented** - Uses [`LoanApplicationsTriggerHandler`](https://github.com/consulting-brendan/fflib-loan-poc/blob/main/sfdx-source/apex-common-samplecode/main/classes/triggerHandlers/LoanApplicationsTriggerHandler.cls) extending `fflib_SObjectDomain` for trigger event handling, registered in Application factory
 
 ### Manual Testing Scripts - Story A
 
@@ -225,11 +225,11 @@ Products                            96% ✅
 * **Async Layer**: [`ProductRateNormalizationBatch`](https://github.com/consulting-brendan/fflib-loan-poc/blob/main/sfdx-source/apex-common-samplecode/main/classes/batchjobs/ProductRateNormalizationBatch.cls) — batchable implementation for background processing
 
 **Design Trade-offs:**
-* **Batch Strategy**: ✅ **Implemented** - Chose Batchable over Queueable for large dataset processing with configurable batch sizes. Includes both synchronous service calls and asynchronous batch processing options
+* **Batch Strategy**: **Implemented** - Chose Batchable over Queueable for large dataset processing with configurable batch sizes. Includes both synchronous service calls and asynchronous batch processing options
 * **Error Handling**: Basic batch error handling implemented with debug logging. Production would benefit from more sophisticated logging, retry mechanisms, and error notification systems
-* **Constants Management**: ✅ **Properly Structured** - Rate bounds defined as constants in [`Products`](https://github.com/consulting-brendan/fflib-loan-poc/blob/main/sfdx-source/apex-common-samplecode/main/classes/domains/Products.cls) domain class (MIN_RATE, MAX_RATE), following domain-driven design. Production could move to Custom Metadata for business user configuration
-* **Testing**: ✅ **Comprehensive Implementation** - Full test coverage including service tests, batch tests, scheduler tests, and domain tests with multiple scenarios
-* **Scheduler Integration**: ✅ **Production-Ready** - Complete scheduler implementation with setup/teardown utilities, configurable cron expressions, job monitoring, and management capabilities
+* **Constants Management**: **Properly Structured** - Rate bounds defined as constants in [`Products`](https://github.com/consulting-brendan/fflib-loan-poc/blob/main/sfdx-source/apex-common-samplecode/main/classes/domains/Products.cls) domain class (MIN_RATE, MAX_RATE), following domain-driven design. Production could move to Custom Metadata for business user configuration
+* **Testing**: **Comprehensive Implementation** - Full test coverage including service tests, batch tests, scheduler tests, and domain tests with multiple scenarios
+* **Scheduler Integration**: **Production-Ready** - Complete scheduler implementation with setup/teardown utilities, configurable cron expressions, job monitoring, and management capabilities
 
 ### Manual Testing Scripts - Story B
 
