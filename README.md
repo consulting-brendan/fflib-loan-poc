@@ -336,25 +336,6 @@ for(CronTrigger job : jobs) {
 - `Annual_Income__c` (Currency)  
 - `Credit_Score__c` (Number)
 
-### Deployment
-```bash
-# Deploy all loan application components
-sf project deploy start --source-dir sfdx-source/apex-common-samplecode/main/classes/domains/LoanApplications.cls --target-org [your-org]
-sf project deploy start --source-dir sfdx-source/apex-common-samplecode/main/triggers/LoanApplications.trigger --target-org [your-org]
-
-# Deploy test classes
-sf project deploy start --source-dir sfdx-source/apex-common-samplecode/test/classes/domains/LoanApplicationsTest.cls --target-org [your-org]
-```
-
-## Learning Notes
-
-This project demonstrates key fflib patterns:
-- **Separation of Concerns**: Clear boundaries between trigger, domain, selector, and service layers
-- **Factory Pattern**: Centralized object creation via Application factories  
-- **Interface Segregation**: Each layer has corresponding interfaces for testability
-- **Domain-Driven Design**: Business logic encapsulated in domain classes
-- **Unit of Work**: Transactional integrity across multiple DML operations
-
 ## References & Acknowledgments
 
 This implementation is built using the **Apex Enterprise Patterns** (fflib) framework:
